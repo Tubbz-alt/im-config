@@ -1,0 +1,12 @@
+#! /bin/sh
+
+if ! [ -e "/usr/bin/ibus-daemon" ]; then 
+
+if [ -r /etc/X11/Xsession.d/70im-config_launch ]; then
+    . /etc/X11/Xsession.d/70im-config_launch
+
+    # always export variables even for manual configuration.
+    env | grep -E '^(IM_CONFIG_PHASE|XMODIFIERS|GTK_IM_MODULE|QT_IM_MODULE|QT4_IM_MODULE|CLUTTER_IM_MODULE)='
+fi
+
+fi
