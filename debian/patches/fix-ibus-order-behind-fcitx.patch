@@ -1,0 +1,121 @@
+Description: <short summary of the patch>
+ TODO: Put a short summary on the line above and replace this paragraph
+ with a longer explanation of this change. Complete the meta-information
+ with other relevant fields (see below for details). To make it easier, the
+ information below has been extracted from the changelog. Adjust it or drop
+ it.
+ .
+ im-config (0.34-1deepin) unstable; urgency=medium
+ .
+   * add patch
+Author: zs <zs@deepin.com>
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Origin: <vendor|upstream|other>, <url of original patch>
+Bug: <url in upstream bugtracker>
+Bug-Debian: https://bugs.debian.org/<bugnumber>
+Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
+Forwarded: <no|not-needed|url proving that it has been forwarded>
+Reviewed-By: <name and email of someone who approved the patch>
+Last-Update: 2018-07-02
+
+--- /dev/null
++++ im-config-0.34/data/23_ibus.conf
+@@ -0,0 +1,27 @@
++# vim: set sts=4 expandtab:
++IM_CONFIG_SHORT="$(gettext "activate Intelligent Input Bus (IBus)")"
++
++IM_CONFIG_LONG="$(gettext "Intelligent Input Bus (IBus)
++ * Required for all: ibus
++ * Language specific input conversion support:
++   * Japanese: ibus-mozc (best) or ibus-anthy or ibus-skk
++   * Korean: ibus-hangul
++   * Simplified Chinese: ibus-pinyin or ibus-sunpinyin or ibus-googlepinyin
++   * Traditional Chinese: ibus-chewing
++   * Thai: ibus-table-thai
++   * Vietnamese: ibus-unikey or ibus-table-viqr
++   * X Keyboard emulation: ibus-xkbc
++   * Generic keyboard translation table: ibus-m17n or ibus-table* packages
++ * Application platform support:
++   * GNOME/GTK+: ibus-gtk and ibus-gtk3 (both)
++   * KDE/Qt: ibus-qt4
++   * Clutter: ibus-clutter
++   * EMACS: ibus-el")"
++
++package_auto () {
++    package_status ibus
++}
++
++package_menu () {
++    package_status ibus
++}
+--- /dev/null
++++ im-config-0.34/data/23_ibus.rc
+@@ -0,0 +1,63 @@
++# start IBus
++# vim: set sts=4 expandtab:
++
++if [ "$IM_CONFIG_PHASE" = 2 ]; then
++# start IBus daemon
++/usr/bin/ibus-daemon --daemonize --xim
++fi
++
++if [ "$IM_CONFIG_PHASE" = 1 ]; then
++# set variables for the plain XIM
++XMODIFIERS=@im=ibus
++
++GTK_IM_MODULE=xim
++# use immodule only when available for both GTK 2.0 and 3.0
++IM_CONFIG_MARKER2=0
++for IM_CONFIG_MARKER in /usr/lib/*/gtk-2.0/*/immodules/im-ibus.so \
++                        /usr/lib/gtk-2.0/*/immodules/im-ibus.so ; do
++    if [ -e $IM_CONFIG_MARKER ]; then
++        IM_CONFIG_MARKER2=1
++        break
++    fi
++done
++
++IM_CONFIG_MARKER3=0
++for IM_CONFIG_MARKER in /usr/lib/*/gtk-3.0/*/immodules/im-ibus.so \
++                        /usr/lib/gtk-3.0/*/immodules/im-ibus.so ; do
++    if [ -e $IM_CONFIG_MARKER ]; then
++        IM_CONFIG_MARKER3=1
++        break
++    fi
++done
++if [ $IM_CONFIG_MARKER2 = 1 ] && [ $IM_CONFIG_MARKER3 = 1 ] ; then
++    GTK_IM_MODULE=ibus
++fi
++
++QT4_IM_MODULE=xim
++# use immodule when available for Qt4 (Qt3 has been long dead)
++for IM_CONFIG_MARKER in /usr/lib/*/qt4/plugins/inputmethods/libqtim-ibus.so\
++                        /usr/lib/qt4/plugins/inputmethods/libqtim-ibus.so ; do
++    if [ -e $IM_CONFIG_MARKER ]; then
++        QT4_IM_MODULE=ibus
++        break
++    fi
++done
++QT_IM_MODULE=xim
++# use immodule when available for Qt5
++for IM_CONFIG_MARKER in /usr/lib/*/qt5/plugins/platforminputcontexts/libibusplatforminputcontextplugin.so ; do
++    if [ -e $IM_CONFIG_MARKER ]; then
++        QT_IM_MODULE=ibus
++        break
++    fi
++done
++
++CLUTTER_IM_MODULE=xim
++# use immodule when available for clutter
++for IM_CONFIG_MARKER in /usr/lib/*/clutter-imcontext/immodules/im-ibus.so \
++                        /usr/lib/clutter-imcontext/immodules/im-ibus.so; do
++    if [ -e $IM_CONFIG_MARKER ]; then
++        CLUTTER_IM_MODULE=ibus
++        break
++    fi
++done
++fi

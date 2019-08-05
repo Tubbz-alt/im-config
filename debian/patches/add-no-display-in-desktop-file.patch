@@ -1,0 +1,7 @@
+--- im-config-0.27.orig/im-config.desktop
++++ im-config-0.27/im-config.desktop
+@@ -24,3 +24,4 @@ Exec=im-config
+ Terminal=false
+ Icon=input-keyboard
+ Categories=Settings
++NoDisplay=true

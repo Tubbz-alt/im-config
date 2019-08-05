@@ -1,0 +1,3 @@
+# deepin
+add-no-display-in-desktop-file.patch
+fix-ibus-order-behind-fcitx.patch
